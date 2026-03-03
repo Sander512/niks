@@ -1,0 +1,88 @@
+:root {
+    --primary: #f40552;
+    --bg: #080808;
+    --card-bg: #0f0f0f;
+    --border: rgba(255,255,255,0.05);
+    --text-dim: #555555;
+    --discord: #5865F2;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+body { background: var(--bg); color: white; overflow-x: hidden; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+/* Navigatie */
+nav { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; background: #000; position: sticky; top: 0; z-index: 1000; }
+.nav-container { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-weight: 900; letter-spacing: 4px; font-size: 16px; color: white; text-decoration: none; }
+.nav-links a { color: var(--text-dim); text-decoration: none; font-size: 11px; font-weight: 800; margin-right: 30px; letter-spacing: 1px; }
+.nav-links a.active { color: white; }
+.nav-cta { color: var(--primary); font-size: 11px; font-weight: 900; text-decoration: none; letter-spacing: 1px; cursor: pointer; border: 1px solid var(--primary); padding: 8px 15px; }
+
+/* Forum Layout */
+.forum-layout { display: grid; grid-template-columns: 1fr 300px; gap: 40px; margin-top: 50px; align-items: start; }
+
+/* Sidebar & Player Count FIX */
+.sidebar-info-box { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border); 
+    padding: 30px 20px; 
+    margin-bottom: 30px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; /* Alles in het midden van de box */
+    text-align: center;
+}
+
+.sidebar-info-box h4 { 
+    width: 100%;
+    font-size: 10px; 
+    letter-spacing: 2px; 
+    color: var(--text-dim); 
+    margin-bottom: 20px; 
+    text-transform: uppercase; 
+    text-align: left; /* Titel wel links */
+}
+
+.player-stat { 
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#playerCount { 
+    font-size: 80px; /* Iets groter voor de impact */
+    font-weight: 900; 
+    line-height: 0.9; 
+    letter-spacing: -5px; 
+    color: white; 
+    margin: 10px 0;
+}
+
+.player-stat small { 
+    display: block; 
+    font-size: 10px; 
+    font-weight: 900; 
+    color: #444; 
+    text-transform: uppercase; 
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+.status-indicator { width: 100%; height: 3px; background: #000; margin-top: 25px; border-radius: 5px; overflow: hidden; }
+.fill { height: 100%; background: var(--primary); width: 0%; transition: 1.5s ease-in-out; box-shadow: 0 0 15px var(--primary); }
+
+/* Overige styling */
+.forum-category-row { padding: 30px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.cat-main h3 { font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+.cat-main p { color: var(--text-dim); font-size: 13px; }
+
+/* Modals */
+.login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; z-index: 9999; }
+.login-box { width: 340px; text-align: center; }
+.minimal-input { width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 18px; color: white; margin-bottom: 12px; outline: none; }
+.btn-auth { width: 100%; padding: 18px; border: none; font-weight: 900; cursor: pointer; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.btn-discord { background: var(--discord); color: white; }
+.btn-primary { background: var(--primary); color: white; }

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RandStad | Forum Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #f40552; --bg: #080808; --card-bg: #0f0f0f; --border: rgba(255,255,255,0.05); --text-dim: #555555; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background: var(--bg); color: white; overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Nav */
+        nav { height: 80px; border-bottom: 1px solid var(--border); display: flex; align-items: center; background: #000; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-weight: 900; letter-spacing: 4px; font-size: 18px; color: white; text-decoration: none; }
+        .nav-container { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 12px; font-weight: 800; margin-right: 25px; letter-spacing: 1px; }
+        .nav-links a.active { color: white; }
+        .nav-cta { color: var(--primary); font-size: 11px; font-weight: 900; text-decoration: none; letter-spacing: 1px; cursor: pointer; border: 1px solid var(--primary); padding: 10px 20px; transition: 0.3s; }
+        .nav-cta:hover { background: var(--primary); color: white; }
+
+        /* Layout */
+        .forum-layout { display: grid; grid-template-columns: 1fr 320px; gap: 40px; margin-top: 50px; }
+        @media (max-width: 900px) { .forum-layout { grid-template-columns: 1fr; } }
+
+        /* Sidebar & Player Count */
+        .sidebar-info-box { background: var(--card-bg); border: 1px solid var(--border); padding: 35px 25px; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        #playerCount { font-size: 75px; font-weight: 900; line-height: 0.8; letter-spacing: -4px; margin-bottom: 10px; color: white; }
+        .player-stat small { font-size: 11px; font-weight: 800; color: #444; text-transform: uppercase; letter-spacing: 2px; }
+        .status-indicator { width: 100%; height: 4px; background: #000; margin-top: 25px; border-radius: 10px; overflow: hidden; }
+        .fill { height: 100%; background: var(--primary); width: 0%; transition: 0.5s ease; box-shadow: 0 0 15px var(--primary); }
+
+        /* Modals */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { width: 360px; text-align: center; padding: 40px; background: var(--card-bg); border: 1px solid var(--border); }
+        .minimal-input { width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 18px; color: white; margin-bottom: 15px; outline: none; }
+        .btn-auth { width: 100%; padding: 18px; border: none; font-weight: 900; cursor: pointer; font-size: 11px; text-transform: uppercase; }
+        .btn-primary { background: var(--primary); color: white; }
+        .strength-container { width: 100%; height: 3px; background: #111; margin-bottom: 20px; margin-top: -10px; }
+        #strengthFill { height: 100%; width: 0%; transition: 0.4s; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container container">
+            <a href="#" class="logo">RANDSTAD</a>
+            <div class="nav-links">
+                <a href="#">HOME</a>
+                <a href="#" class="active">FORUM</a>
+            </div>
+            <div id="navAuth">
+                <a href="javascript:void(0)" class="nav-cta" onclick="toggleModal('loginModal')">LOGIN</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="forum-layout">
+            <main>
+                <div style="padding: 40px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer;" onclick="checkAccess()">
+                    <h3 style="color: var(--primary); font-weight: 900; letter-spacing: 1px;">BURGER DISCUSSIES</h3>
+                    <p style="color: #666; font-size: 14px; margin-top: 10px;">Klik om de gesprekken in de stad te bekijken.</p>
+                </div>
+            </main>
+
+            <aside>
+                <div class="sidebar-info-box">
+                    <h4 style="width:100%; text-align:left; font-size:10px; color:#555; letter-spacing:2px; margin-bottom:20px;">LIVE STATUS</h4>
+                    <div class="player-stat">
+                        <span id="playerCount">0</span>
+                        <small>CITIZENS IN-CITY</small>
+                    </div>
+                    <div class="status-indicator"><div id="statusFill" class="fill"></div></div>
+                </div>
+
+                <div id="userBox" class="sidebar-info-box" style="display:none;">
+                    <h4 style="width:100%; text-align:left; font-size:10px; color:#555; letter-spacing:2px; margin-bottom:20px;">ACCOUNT</h4>
+                    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                        <span id="activeUser" style="font-size: 11px; font-weight: 900;"></span>
+                        <a href="#" onclick="logout()" style="color: var(--primary); font-size: 11px; font-weight: 900; text-decoration: none;">LOGOUT</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="loginModal" class="login-overlay">
+        <div class="login-box">
+            <h3 style="letter-spacing: 2px;">LOGIN</h3>
+            <input type="email" id="logEmail" placeholder="EMAIL" class="minimal-input" style="margin-top:20px;">
+            <input type="password" id="logPass" placeholder="WACHTWOORD" class="minimal-input">
+            <button class="btn-auth btn-primary" onclick="login()">INLOGGEN</button>
+            <p style="font-size: 11px; color: #444; margin-top: 20px;">NOG GEEN ACCOUNT? <a href="#" onclick="switchModal('loginModal', 'regModal')" style="color: var(--primary); text-decoration: none;">REGISTREER</a></p>
+            <button onclick="toggleModal('loginModal')" style="background:none; border:none; color:#333; margin-top:20px; cursor:pointer; font-weight:900;">SLUITEN</button>
+        </div>
+    </div>
+
+    <div id="regModal" class="login-overlay">
+        <div class="login-box">
+            <h3 style="letter-spacing: 2px;">REGISTREREN</h3>
+            <input type="text" id="regName" placeholder="GEBRUIKERSNAAM" class="minimal-input" style="margin-top:20px;">
+            <input type="email" id="regEmail" placeholder="GMAIL ADRES" class="minimal-input">
+            <input type="password" id="regPass" placeholder="WACHTWOORD" class="minimal-input" oninput="checkStrength(this.value)">
+            <div class="strength-container"><div id="strengthFill"></div></div>
+            <button class="btn-auth btn-primary" onclick="register()">CREATE ACCOUNT</button>
+            <button onclick="switchModal('regModal', 'loginModal')" style="background:none; border:none; color:#333; margin-top:20px; cursor:pointer; font-weight:900;">TERUG</button>
+        </div>
+    </div>
+
+    <script>
+        const universeId = "9556267614"; 
+
+        async function updatePlayers() {
+            const countEl = document.getElementById('playerCount');
+            const fillEl = document.getElementById('statusFill');
+            try {
+                const res = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://games.roblox.com/v1/games?universeIds=' + universeId)}`);
+                const data = await res.json();
+                if (data.data && data.data[0]) {
+                    const players = data.data[0].playing;
+                    countEl.innerText = players;
+                    fillEl.style.width = Math.min((players / 100) * 100, 100) + "%";
+                }
+            } catch (err) { console.log("Updating..."); }
+        }
+
+        function login() {
+            const e = document.getElementById('logEmail').value;
+            const p = document.getElementById('logPass').value;
+            const db = JSON.parse(localStorage.getItem('userDB'));
+            if (!db) return alert("Account bestaat niet. Registreer eerst!");
+            if (e === db.e && p === db.p) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userName', db.n);
+                location.reload();
+            } else alert("Onjuiste gegevens!");
+        }
+
+        function register() {
+            const n = document.getElementById('regName').value;
+            const e = document.getElementById('regEmail').value;
+            const p = document.getElementById('regPass').value;
+            if (!e.includes("@gmail.com")) return alert("Alleen Gmail!");
+            if (n && e && p) {
+                localStorage.setItem('userDB', JSON.stringify({n, e, p}));
+                alert("Account aangemaakt!"); switchModal('regModal', 'loginModal');
+            }
+        }
+
+        function checkStrength(p) {
+            const f = document.getElementById('strengthFill');
+            let s = 0; if(p.length > 5) s++; if(/[A-Z]/.test(p)) s++; if(/[0-9]/.test(p)) s++;
+            f.style.width = (s * 33.3) + "%";
+            f.style.background = s < 2 ? "red" : s == 2 ? "orange" : "lime";
+        }
+
+        function toggleModal(id) {
+            const m = document.getElementById(id);
+            m.style.display = (m.style.display === "flex") ? "none" : "flex";
+        }
+
+        function switchModal(o, n) { 
+            document.getElementById(o).style.display = "none"; 
+            document.getElementById(n).style.display = "flex"; 
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+        function checkAccess() { if(localStorage.getItem('isLoggedIn') !== 'true') toggleModal('loginModal'); else alert('Welkom terug!'); }
+
+        window.onload = function() {
+            updatePlayers();
+            setInterval(updatePlayers, 1000); 
+            if(localStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('userBox').style.display = 'flex';
+                document.getElementById('activeUser').innerText = localStorage.getItem('userName').toUpperCase();
+                document.getElementById('navAuth').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
